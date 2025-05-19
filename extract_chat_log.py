@@ -35,6 +35,10 @@ for user,message in pattern:
 user_messages_count=len(dialogue["User"])
 ai_messages_count=len(dialogue["AI"])
 
+print("Total number of message exchanges in sample date: ",total_message_count)
+print("Messages from User in total: ",user_messages_count)
+print("Messages from AI in total: ",ai_messages_count)
+
 # Clean sample content by removing speaker
 clean_content = re.sub(r'(User|AI):\s*', '', content)
 
@@ -54,8 +58,30 @@ word_frequency={}
 for word in filtered_word:
     word_frequency[word]=word_frequency.get(word,0)+1
     
-print(word_frequency)
 
 # Top 5 common frequently used words
 most_frequent_5_words=sorted(word_frequency,key=lambda word:word_frequency[word],reverse=True)[:5]
-print(most_frequent_5_words)
+
+print("Top 5 most frequently used words list: ",", ".join(most_frequent_5_words))
+
+# To get conversation nature I'm user rule-based keyword matching technique here
+# Collected predefine conversation nature based on words
+nature_keywords = {
+    "informational": {"python", "programming", "language", "known", "readability", 
+                      "popular", "data", "analysis", "ai"},
+    "instructional": {"use", "how", "step", "guide", "instruction", "tell"},
+    "conversational": {"hi", "hello", "hey", "sure"},
+    "troubleshooting": {"error", "issue", "problem", "not working"},
+    "feedback": {"good", "bad", "love", "thanks"}
+}
+
+# Count matching keywords for each nature
+scores = {}
+for nature, keyword in nature_keywords.items():
+    match_count = len(set(filtered_word) & keyword)
+    scores[nature] = match_count
+
+nature = max(scores, key=scores.get)
+
+print("Conversation Scores:", scores)
+print("Predicted nature of conversation:", nature)
